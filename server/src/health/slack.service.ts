@@ -129,5 +129,66 @@ export class SlackService {
       this.logger.error('Error sending stale alert to Slack', error);
     }
   }
+
+  async sendNonNormalModeAlert(
+    photobooth: Photobooth,
+    mode: string,
+    hoursInMode: number,
+  ) {
+    if (!this.client) {
+      this.logger.warn('SLACK_BOT_TOKEN not configured, skipping Slack notification');
+      return;
+    }
+
+    try {
+      await this.client.chat.postMessage({
+        channel: this.channel,
+        text: `⚠️ Photobooth Non-Normal Mode Alert`,
+        blocks: [
+          {
+            type: 'header',
+            text: {
+              type: 'plain_text',
+              text: '⚠️ Photobooth Non-Normal Mode Alert',
+              emoji: true,
+            },
+          },
+          {
+            type: 'section',
+            fields: [
+              {
+                type: 'mrkdwn',
+                text: `*Booth ID:*\n${photobooth.boothId}`,
+              },
+              {
+                type: 'mrkdwn',
+                text: `*Name:*\n${photobooth.name || 'N/A'}`,
+              },
+              {
+                type: 'mrkdwn',
+                text: `*Current Mode:*\n${mode}`,
+              },
+              {
+                type: 'mrkdwn',
+                text: `*Hours in Mode:*\n${hoursInMode.toFixed(1)}`,
+              },
+            ],
+          },
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `This booth has been in *${mode}* mode for more than 24 hours. Please check if this is expected.`,
+            },
+          },
+        ],
+      });
+      this.logger.log(
+        `Non-normal mode alert sent for booth ${photobooth.boothId} (${mode} mode for ${hoursInMode.toFixed(1)} hours)`,
+      );
+    } catch (error) {
+      this.logger.error('Error sending non-normal mode alert to Slack', error);
+    }
+  }
 }
 

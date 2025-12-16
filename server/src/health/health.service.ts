@@ -172,6 +172,98 @@ export class HealthService {
     }
   }
 
+  @Cron(CronExpression.EVERY_HOUR)
+  async checkNonNormalModes() {
+    const thresholdHours = 24;
+
+    try {
+      const booths = await this.prisma.photobooth.findMany({
+        include: {
+          healthLogs: {
+            orderBy: { createdAt: 'desc' },
+            take: 1,
+          },
+        },
+      });
+
+      for (const booth of booths) {
+        const latestLog = booth.healthLogs[0];
+        if (!latestLog || !latestLog.metadata) {
+          continue;
+        }
+
+        try {
+          const metadata = JSON.parse(latestLog.metadata);
+          const currentMode = metadata.mode;
+
+          // Skip if mode is Normal or Unknown
+          if (!currentMode || currentMode === 'Normal' || currentMode === 'Unknown') {
+            continue;
+          }
+
+          // Find when the mode first changed to this non-Normal mode
+          // Get all logs in descending order (newest first) and find the oldest log
+          // that has the current mode (which is when it first entered this mode)
+          const allLogs = await this.prisma.healthLog.findMany({
+            where: {
+              photoboothId: booth.id,
+            },
+            orderBy: { createdAt: 'desc' },
+          });
+
+          // Find the oldest log with the current mode
+          // We iterate backwards (newest to oldest) and track the last one we see
+          // with the current mode before we hit a different mode
+          let oldestLogWithCurrentMode: typeof latestLog | null = null;
+
+          for (const log of allLogs) {
+            if (!log.metadata) continue;
+
+            try {
+              const logMetadata = JSON.parse(log.metadata);
+              const logMode = logMetadata.mode;
+
+              if (logMode === currentMode) {
+                // This log has the current mode, keep track of it
+                oldestLogWithCurrentMode = log;
+              } else {
+                // We found a log with a different mode, so we've gone back far enough
+                // The last log we saw with currentMode is when it first entered that mode
+                break;
+              }
+            } catch {
+              continue;
+            }
+          }
+
+          // If we found when the mode changed, calculate hours in mode
+          if (oldestLogWithCurrentMode) {
+            const hoursInMode =
+              (new Date().getTime() -
+                oldestLogWithCurrentMode.createdAt.getTime()) /
+              (1000 * 60 * 60);
+
+            if (hoursInMode >= thresholdHours) {
+              await this.slackService.sendNonNormalModeAlert(
+                booth,
+                currentMode,
+                hoursInMode,
+              );
+              this.logger.warn(
+                `Non-normal mode detected: ${booth.boothId} in ${currentMode} mode for ${hoursInMode.toFixed(1)} hours`,
+              );
+            }
+          }
+        } catch (error) {
+          // Skip if metadata parsing fails
+          continue;
+        }
+      }
+    } catch (error) {
+      this.logger.error('Error checking non-normal modes', error);
+    }
+  }
+
   @Cron(CronExpression.EVERY_DAY_AT_2AM)
   async cleanupOldHealthLogs() {
     const retentionDays = 3;
