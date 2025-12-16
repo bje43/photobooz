@@ -1,5 +1,8 @@
 import axios from 'axios';
 
+// In production, use relative path '/api' since server serves the client
+// In development, Vite proxy handles '/api' -> 'http://localhost:3000'
+// VITE_API_URL can be set to override (e.g., for testing against different servers)
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 const apiClient = axios.create({

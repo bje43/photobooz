@@ -76,6 +76,41 @@ export class HealthService {
     }
   }
 
+  private convertWindowsTimezoneToIANA(windowsTz: string): string {
+    // Map common Windows timezone IDs to IANA timezone identifiers
+    const timezoneMap: Record<string, string> = {
+      'Eastern Standard Time': 'America/New_York',
+      'Central Standard Time': 'America/Chicago',
+      'Mountain Standard Time': 'America/Denver',
+      'Pacific Standard Time': 'America/Los_Angeles',
+      'Alaska Standard Time': 'America/Anchorage',
+      'Hawaiian Standard Time': 'Pacific/Honolulu',
+      'Atlantic Standard Time': 'America/Halifax',
+      'Newfoundland Standard Time': 'America/St_Johns',
+      'Central European Standard Time': 'Europe/Budapest',
+      'GMT Standard Time': 'Europe/London',
+      'W. Europe Standard Time': 'Europe/Berlin',
+      'Romance Standard Time': 'Europe/Paris',
+      'Russian Standard Time': 'Europe/Moscow',
+      'Tokyo Standard Time': 'Asia/Tokyo',
+      'China Standard Time': 'Asia/Shanghai',
+      'India Standard Time': 'Asia/Kolkata',
+      'AUS Eastern Standard Time': 'Australia/Sydney',
+      'Cen. Australia Standard Time': 'Australia/Adelaide',
+      'AUS Central Standard Time': 'Australia/Darwin',
+      'E. Australia Standard Time': 'Australia/Brisbane',
+      'W. Australia Standard Time': 'Australia/Perth',
+    };
+
+    // If it's already an IANA timezone (contains '/'), return as-is
+    if (windowsTz.includes('/')) {
+      return windowsTz;
+    }
+
+    // Convert Windows timezone to IANA
+    return timezoneMap[windowsTz] || 'UTC';
+  }
+
   private isWithinOperatingHours(
     operatingHours: string | null,
     timezone: string | null,
@@ -91,7 +126,12 @@ export class HealthService {
       }
 
       // Get current time in booth's timezone
-      const tz = timezone || 'UTC';
+      // Convert Windows timezone IDs to IANA if needed
+      let tz = timezone || 'UTC';
+      if (tz && !tz.includes('/')) {
+        tz = this.convertWindowsTimezoneToIANA(tz);
+      }
+      
       const now = new Date();
       
       // Get day of week in booth's timezone

@@ -29,6 +29,50 @@ function Log([string]$msg) {
     Write-Host $logMsg
 }
 
+# === Timezone Conversion ===
+function Convert-WindowsTimezoneToIANA {
+    param([string]$WindowsTimezone)
+    
+    # Map Windows timezone IDs to IANA timezone identifiers
+    $timezoneMap = @{
+        'Eastern Standard Time' = 'America/New_York'
+        'Central Standard Time' = 'America/Chicago'
+        'Mountain Standard Time' = 'America/Denver'
+        'Pacific Standard Time' = 'America/Los_Angeles'
+        'Alaska Standard Time' = 'America/Anchorage'
+        'Hawaiian Standard Time' = 'Pacific/Honolulu'
+        'Atlantic Standard Time' = 'America/Halifax'
+        'Newfoundland Standard Time' = 'America/St_Johns'
+        'Central European Standard Time' = 'Europe/Berlin'
+        'GMT Standard Time' = 'Europe/London'
+        'W. Europe Standard Time' = 'Europe/Berlin'
+        'Romance Standard Time' = 'Europe/Paris'
+        'Russian Standard Time' = 'Europe/Moscow'
+        'Tokyo Standard Time' = 'Asia/Tokyo'
+        'China Standard Time' = 'Asia/Shanghai'
+        'India Standard Time' = 'Asia/Kolkata'
+        'AUS Eastern Standard Time' = 'Australia/Sydney'
+        'Cen. Australia Standard Time' = 'Australia/Adelaide'
+        'AUS Central Standard Time' = 'Australia/Darwin'
+        'E. Australia Standard Time' = 'Australia/Brisbane'
+        'W. Australia Standard Time' = 'Australia/Perth'
+    }
+    
+    # If it's already an IANA timezone (contains '/'), return as-is
+    if ($WindowsTimezone -match '/') {
+        return $WindowsTimezone
+    }
+    
+    # Convert Windows timezone to IANA
+    if ($timezoneMap.ContainsKey($WindowsTimezone)) {
+        return $timezoneMap[$WindowsTimezone]
+    }
+    
+    # Default to UTC if unknown
+    Log "WARNING: Unknown Windows timezone '$WindowsTimezone', defaulting to UTC"
+    return 'UTC'
+}
+
 # === Settings ===
 function Get-BoothId {
     if (!(Test-Path $SettingsPath)) {
@@ -245,7 +289,9 @@ function Send-HealthPing {
     }
 
     try {
-        $timezone = [System.TimeZoneInfo]::Local.Id
+        # Convert Windows timezone ID to IANA timezone identifier
+        $windowsTz = [System.TimeZoneInfo]::Local.Id
+        $timezone = Convert-WindowsTimezoneToIANA -WindowsTimezone $windowsTz
         $timezoneOffset = [System.TimeZoneInfo]::Local.GetUtcOffset([DateTime]::UtcNow).TotalHours
 
         # Build payload matching HealthPingDto interface:
