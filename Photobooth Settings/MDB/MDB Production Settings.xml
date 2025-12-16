@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<breeze_mdb_payment_utility version="1.0.2">
+    <action_settings>
+        <alwaysIdle>false</alwaysIdle>
+        <connectionMode>0</connectionMode>
+        <actions>
+            <action index="1">{"name":"Enable reader","state":"INIT","pattern":"welcome.jpg","isRegEx":false,"triggerWhenTransactionFails":false,"enable":true,"cancel":false,"amount":0,"product":1,"command":""}</action>
+            <action index="2">{"name":"Request payment","state":"CREDIT","pattern":"welcome.jpg","isRegEx":false,"triggerWhenTransactionFails":false,"enable":true,"cancel":false,"amount":700,"product":1,"command":"Switch from standby to ready"}</action>
+            <action index="3">{"name":"Payment authorized","state":"RESULT","pattern":"ready.jpg","isRegEx":false,"triggerWhenTransactionFails":false,"enable":true,"cancel":false,"amount":0,"product":1,"command":""}</action>
+            <action index="4">{"name":"Payment failed","state":"IDLE","pattern":"ready.jpg","isRegEx":false,"triggerWhenTransactionFails":true,"enable":true,"cancel":false,"amount":0,"product":1,"command":"Switch from ready to standby"}</action>
+            <action index="5">{"name":"Disable during countdown","state":"IDLE","pattern":"1.jpg","isRegEx":false,"triggerWhenTransactionFails":false,"enable":false,"cancel":false,"amount":0,"product":1,"command":""}</action>
+        </actions>
+    </action_settings>
+</breeze_mdb_payment_utility>

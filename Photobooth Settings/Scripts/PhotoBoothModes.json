@@ -1,0 +1,42 @@
+{
+  "Normal": {
+    "description": "Standard paid operation",
+    "processes": {
+      "MDBPayment": {
+        "exe": "C:\\Program Files (x86)\\BreezeSys\\MDB Payment Utility\\MDBPayment.exe",
+        "args": []
+      },
+      "DSlrRemote": {
+        "exe": "C:\\Program Files (x86)\\BreezeSys\\DSLR Remote Pro\\DSlrRemote.exe",
+        "args": [
+          "C:\\Users\\Administrator\\Desktop\\Photobooth Settings\\Production\\BreezeBooth Production.xml"
+        ]
+      }
+    },
+    "suspend": false
+  },
+  "Maintenance": {
+    "description": "Maintenance profile active. Breeze runs with maintenance XML. Payments off.",
+    "processes": {
+      "DSlrRemote": {
+        "exe": "C:\\Program Files (x86)\\BreezeSys\\DSLR Remote Pro\\DSlrRemote.exe",
+        "args": [
+          "C:\\Users\\Administrator\\Desktop\\Photobooth Settings\\Maintenance\\Maintenance Profile Production.xml"
+        ]
+      }
+    },
+    "suspend": false
+  },
+  "Free": {
+    "description": "Free play mode. Camera active, payment disabled.",
+    "processes": {
+      "DSlrRemote": {
+        "exe": "C:\\Program Files (x86)\\BreezeSys\\DSLR Remote Pro\\DSlrRemote.exe",
+        "args": [
+          "C:\\Users\\Administrator\\Desktop\\Photobooth Settings\\Free\\Free.xml"
+        ]
+      }
+    },
+    "suspend": false
+  }
+}

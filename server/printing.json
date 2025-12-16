@@ -1,0 +1,304 @@
+{
+    "CimClass": {
+        "CimSuperClassName": "CIM_ManagedSystemElement",
+        "CimSuperClass": {
+            "CimSuperClassName": "CIM_ManagedElement",
+            "CimSuperClass": "ROOT/StandardCimv2:CIM_ManagedElement",
+            "CimClassProperties": "Caption Description ElementName InstanceID CommunicationStatus DetailedStatus HealthState InstallDate Name OperatingStatus OperationalStatus PrimaryStatus Status StatusDescriptions",
+            "CimClassQualifiers": "UMLPackagePath = \"CIM::Core::CoreElements\" Abstract = True locale = 1033",
+            "CimClassMethods": "",
+            "CimSystemProperties": "Microsoft.Management.Infrastructure.CimSystemProperties"
+        },
+        "CimClassProperties": [
+            "Caption",
+            "Description",
+            "ElementName",
+            "InstanceID",
+            "CommunicationStatus",
+            "DetailedStatus",
+            "HealthState",
+            "InstallDate",
+            "Name",
+            "OperatingStatus",
+            "OperationalStatus",
+            "PrimaryStatus",
+            "Status",
+            "StatusDescriptions",
+            "ComputerName",
+            "Datatype",
+            "DocumentName",
+            "Id",
+            "JobStatus",
+            "JobTime",
+            "PagesPrinted",
+            "Position",
+            "PrinterName",
+            "Priority",
+            "Size",
+            "SubmittedTime",
+            "TotalPages",
+            "UserName"
+        ],
+        "CimClassQualifiers": [
+            "UMLPackagePath = \"CIM::Core::CoreElements\"",
+            "dynamic = True",
+            "locale = 1033",
+            "provider = \"MSFT_Printer\""
+        ],
+        "CimClassMethods": [
+            "GetByName",
+            "GetByObject",
+            "DeleteJobByObject",
+            "DeleteJobById",
+            "DeleteJobByPrinterObject",
+            "RestartJobByObject",
+            "RestartJobById",
+            "RestartJobByPrinterObject",
+            "ResumeJobByObject",
+            "ResumeJobById",
+            "ResumeJobByPrinterObject",
+            "SuspendJobByObject",
+            "SuspendJobById",
+            "SuspendJobByPrinterObject"
+        ],
+        "CimSystemProperties": {
+            "Namespace": "ROOT/StandardCimv2",
+            "ServerName": "COMPUTER",
+            "ClassName": "MSFT_PrintJob",
+            "Path": null
+        }
+    },
+    "CimInstanceProperties": [
+        {
+            "Name": "Caption",
+            "Value": null,
+            "CimType": 14,
+            "Flags": "Property, NotModified, NullValue",
+            "IsValueModified": false
+        },
+        {
+            "Name": "Description",
+            "Value": null,
+            "CimType": 14,
+            "Flags": "Property, NotModified, NullValue",
+            "IsValueModified": false
+        },
+        {
+            "Name": "ElementName",
+            "Value": null,
+            "CimType": 14,
+            "Flags": "Property, NotModified, NullValue",
+            "IsValueModified": false
+        },
+        {
+            "Name": "InstanceID",
+            "Value": null,
+            "CimType": 14,
+            "Flags": "Property, NotModified, NullValue",
+            "IsValueModified": false
+        },
+        {
+            "Name": "CommunicationStatus",
+            "Value": null,
+            "CimType": 4,
+            "Flags": "Property, NotModified, NullValue",
+            "IsValueModified": false
+        },
+        {
+            "Name": "DetailedStatus",
+            "Value": null,
+            "CimType": 4,
+            "Flags": "Property, NotModified, NullValue",
+            "IsValueModified": false
+        },
+        {
+            "Name": "HealthState",
+            "Value": null,
+            "CimType": 4,
+            "Flags": "Property, NotModified, NullValue",
+            "IsValueModified": false
+        },
+        {
+            "Name": "InstallDate",
+            "Value": null,
+            "CimType": 13,
+            "Flags": "Property, NotModified, NullValue",
+            "IsValueModified": false
+        },
+        {
+            "Name": "Name",
+            "Value": null,
+            "CimType": 14,
+            "Flags": "Property, NotModified, NullValue",
+            "IsValueModified": false
+        },
+        {
+            "Name": "OperatingStatus",
+            "Value": null,
+            "CimType": 4,
+            "Flags": "Property, NotModified, NullValue",
+            "IsValueModified": false
+        },
+        {
+            "Name": "OperationalStatus",
+            "Value": null,
+            "CimType": 20,
+            "Flags": "Property, NotModified, NullValue",
+            "IsValueModified": false
+        },
+        {
+            "Name": "PrimaryStatus",
+            "Value": null,
+            "CimType": 4,
+            "Flags": "Property, NotModified, NullValue",
+            "IsValueModified": false
+        },
+        {
+            "Name": "Status",
+            "Value": null,
+            "CimType": 14,
+            "Flags": "Property, NotModified, NullValue",
+            "IsValueModified": false
+        },
+        {
+            "Name": "StatusDescriptions",
+            "Value": null,
+            "CimType": 30,
+            "Flags": "Property, NotModified, NullValue",
+            "IsValueModified": false
+        },
+        {
+            "Name": "ComputerName",
+            "Value": "",
+            "CimType": 14,
+            "Flags": "Property, ReadOnly, NotModified",
+            "IsValueModified": false
+        },
+        {
+            "Name": "Datatype",
+            "Value": "NT EMF 1.008",
+            "CimType": 14,
+            "Flags": "Property, ReadOnly, NotModified",
+            "IsValueModified": false
+        },
+        {
+            "Name": "DocumentName",
+            "Value": "Test Page",
+            "CimType": 14,
+            "Flags": "Property, ReadOnly, NotModified",
+            "IsValueModified": false
+        },
+        {
+            "Name": "Id",
+            "Value": 3,
+            "CimType": 6,
+            "Flags": "Property, Key, ReadOnly, NotModified",
+            "IsValueModified": false
+        },
+        {
+            "Name": "JobStatus",
+            "Value": 8208,
+            "CimType": 6,
+            "Flags": "Property, ReadOnly, NotModified",
+            "IsValueModified": false
+        },
+        {
+            "Name": "JobTime",
+            "Value": 42784781,
+            "CimType": 6,
+            "Flags": "Property, ReadOnly, NotModified",
+            "IsValueModified": false
+        },
+        {
+            "Name": "PagesPrinted",
+            "Value": 1,
+            "CimType": 6,
+            "Flags": "Property, ReadOnly, NotModified",
+            "IsValueModified": false
+        },
+        {
+            "Name": "Position",
+            "Value": 1,
+            "CimType": 6,
+            "Flags": "Property, ReadOnly, NotModified",
+            "IsValueModified": false
+        },
+        {
+            "Name": "PrinterName",
+            "Value": "HiTi P525 (Copy 1)",
+            "CimType": 14,
+            "Flags": "Property, Key, ReadOnly, NotModified",
+            "IsValueModified": false
+        },
+        {
+            "Name": "Priority",
+            "Value": 1,
+            "CimType": 6,
+            "Flags": "Property, ReadOnly, NotModified",
+            "IsValueModified": false
+        },
+        {
+            "Name": "Size",
+            "Value": 3158424,
+            "CimType": 6,
+            "Flags": "Property, ReadOnly, NotModified",
+            "IsValueModified": false
+        },
+        {
+            "Name": "SubmittedTime",
+            "Value": "\/Date(1765853605435)\/",
+            "CimType": 13,
+            "Flags": "Property, ReadOnly, NotModified",
+            "IsValueModified": false
+        },
+        {
+            "Name": "TotalPages",
+            "Value": 0,
+            "CimType": 6,
+            "Flags": "Property, ReadOnly, NotModified",
+            "IsValueModified": false
+        },
+        {
+            "Name": "UserName",
+            "Value": "Administrator",
+            "CimType": 14,
+            "Flags": "Property, ReadOnly, NotModified",
+            "IsValueModified": false
+        }
+    ],
+    "CimSystemProperties": {
+        "Namespace": "ROOT/StandardCimv2",
+        "ServerName": "COMPUTER",
+        "ClassName": "MSFT_PrintJob",
+        "Path": null
+    },
+    "JobStatus": 8208,
+    "Caption": null,
+    "Description": null,
+    "ElementName": null,
+    "InstanceID": null,
+    "CommunicationStatus": null,
+    "DetailedStatus": null,
+    "HealthState": null,
+    "InstallDate": null,
+    "Name": null,
+    "OperatingStatus": null,
+    "OperationalStatus": null,
+    "PrimaryStatus": null,
+    "Status": null,
+    "StatusDescriptions": null,
+    "ComputerName": "",
+    "Datatype": "NT EMF 1.008",
+    "DocumentName": "Test Page",
+    "Id": 3,
+    "JobTime": 42784781,
+    "PagesPrinted": 1,
+    "Position": 1,
+    "PrinterName": "HiTi P525 (Copy 1)",
+    "Priority": 1,
+    "Size": 3158424,
+    "SubmittedTime": "\/Date(1765853605435)\/",
+    "TotalPages": 0,
+    "UserName": "Administrator",
+    "PSComputerName": null
+}

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<breeze_systems_photobooth version="3.30" app="DSLR Remote Pro for Windows" t="1765621627" id="3ba1c8c8cfebdb37b5b1b4029a6e51ec" name="COMPUTER" reg="20250802" hash="d78887985c1415483d4ea71b184726aadd7d0332">
+    <date>2025/12/13</date>
+    <time>03:27:07</time>
+    <uid>GRW15779</uid>
+    <uid2>MLPHP745</uid2>
+    <uid3>EVK358LZO</uid3>
+    <eventkitegalleryid>{eventKiteGalleryId}</eventkitegalleryid>
+    <eventkitesessionid>ASV165ZMW</eventkitesessionid>
+    <eventId>1a40a839927381460283cf7f8ce6a7bb</eventId>
+    <photobooth_summary>..\IMG_0013.xml</photobooth_summary>
+    <text_info>
+        <to>+17029648859</to>
+        <message>Your photo booth pictures are here!</message>
+        <type>MMS</type>
+        <attachments>
+            <file index="1" md5="acfeedf3b726b503448a5e11dd50773b">000125_064229.jpg
+                <max_size w="800" h="800"/>
+                <rotate>0</rotate>
+            </file>
+        </attachments>
+        <user_data/>
+        <printer_margins left="20" top="22" right="20" bottom="22"/>
+        <send_status>
+            <status date="2025/12/13" time="03:27:09">sent</status>
+        </send_status>
+    </text_info>
+</breeze_systems_photobooth>

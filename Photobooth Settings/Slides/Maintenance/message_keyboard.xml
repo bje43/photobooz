@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<breeze_systems_photobooth version="3.20.1" build_date="Feb 26 2024">
+<photobooth_settings>
+  <keyboard>
+    <background_color>0xEBEBEB</background_color>
+    <vertical_position>bottom</vertical_position>
+    <prompt_color>0x000000</prompt_color>
+    <key_text_color>0xFFFFFF</key_text_color>
+    <key_pressed_text_color>0xFFFFFF</key_pressed_text_color>
+    <key_background_color>0x505050</key_background_color>
+    <key_pressed_background_color>0x848484</key_pressed_background_color>
+    <key_outline_color>0x000000</key_outline_color>
+    <checkbox_tick_color>0xFF0000</checkbox_tick_color>
+    <text_foreground_color>0x000000</text_foreground_color>
+    <text_background_color>0xFFFFFF</text_background_color>
+    <text_box_outline_color>0x000000</text_box_outline_color>
+    <text_box_outline_highlight_color>0xFF0000</text_box_outline_highlight_color>
+    <text_font_name>Arial</text_font_name>
+    <text_point_size>520</text_point_size>
+  </keyboard>
+</photobooth_settings>
+</breeze_systems_photobooth>

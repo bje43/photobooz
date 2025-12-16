@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<breeze_systems_photobooth version="3.30" app="DSLR Remote Pro for Windows" t="1765527328" id="3ba1c8c8cfebdb37b5b1b4029a6e51ec" name="COMPUTER" reg="20250802" hash="3b555acdce940bb9289512b29b8fbb2e3ac93090">
+<event id="6b1bd3fd275bd68174ead1134fecdc58" eventkitegalleryid="">
+  <eventName></eventName>
+  <eventString id="1"></eventString>
+  <eventString id="2"></eventString>
+  <eventString id="3"></eventString>
+  <eventString id="4"></eventString>
+  <eventString id="5"></eventString>
+</event>
+<photo_information>
+  <date>2000/01/24</date>
+  <time>04:30:59</time>
+  <user_data></user_data>
+  <uid>BMM72788</uid>
+  <uid2>FRSQU342</uid2>
+  <uid3>EOQ353WQC</uid3>
+  <eventkitesessionid>XVI525VSX</eventkitesessionid>
+  <prints>1</prints>
+  <photobooth_images_folder>C:\Users\Administrator\Desktop\Photobooth Settings\Slides\Production</photobooth_images_folder>
+  <download_folder>C:\Users\Administrator\Desktop\Photobooth Settings\Photos\2025-12-12</download_folder>
+  <digital_zoom>100</digital_zoom>
+  <mirror_output>0</mirror_output>
+  <greenscreen>0</greenscreen>
+  <saveCopyOfProcessedPhotos>0</saveCopyOfProcessedPhotos>
+  <camera_orientation>0</camera_orientation>
+  <bw_mode>3</bw_mode>
+  <photos>
+    <photo image="1" md5="bea01624d9b57bf478a63822a9bb8cd8">IMG_0001.JPG</photo>
+    <photo image="2" md5="b1b987406376bf513ea2b496725748e9">IMG_0002.JPG</photo>
+    <photo image="3" md5="cac38b8773dec6a64d67de47f32d8639">IMG_0003.JPG</photo>
+    <photo image="4" md5="b63a62be038dee5d2105a15c8054dfbd">IMG_0004.JPG</photo>
+    <output md5="68d4383b849c968dc15947beca0a05bb" hash="224b0ef6d086689e5dbd48fe974de392ec34f4de">prints\000124_043059.jpg</output>
+  </photos>
+</photo_information>
+</breeze_systems_photobooth>

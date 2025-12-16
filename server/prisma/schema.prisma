@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Photobooth {
+  id            String   @id @default(uuid())
+  boothId       String   @unique
+  name          String?
+  timezone      String?  // IANA timezone (e.g., "America/New_York")
+  operatingHours String? // JSON string: { "enabled": true, "schedule": [...] }
+  lastPing      DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  healthLogs    HealthLog[]
+
+  @@map("photobooths")
+}
+
+model HealthLog {
+  id          String   @id @default(uuid())
+  photoboothId String
+  photobooth  Photobooth @relation(fields: [photoboothId], references: [id], onDelete: Cascade)
+  status      String
+  message     String?
+  metadata    String?  // JSON string for additional data
+  createdAt   DateTime @default(now())
+
+  @@map("health_logs")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String   // Hashed password
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
