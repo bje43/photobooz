@@ -40,7 +40,6 @@ lerna-debug.log*
 .env.*.local
 
 # Prisma
-/server/prisma/migrations
 /server/node_modules
 
 # Photobooth Config
