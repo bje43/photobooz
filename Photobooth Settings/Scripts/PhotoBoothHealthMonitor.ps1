@@ -12,8 +12,13 @@ $QueueStaleMinutes = 3  # Document in queue longer than this = jammed
 
 # Make sure these are swapped out w/ prod values later
 # Full URL to health endpoint, e.g. https://your-api.com/api/health/ping
-$HealthEndpoint = "https://65699df3d829.ngrok-free.app/api/health/ping"  
-$ApiKey = "DEVTOKEN"  # Set this to your API key (must match API_KEY in your server .env)
+# Prod values
+$HealthEndpoint = "https://photobooz-66ca05e66406.herokuapp.com/api/health/ping"
+$ApiKey = "233dc2e9-fb49-438f-99c0-4fa6e365b709"  # Set this to your API key (must match API_KEY in your server .env)
+# Dev values
+#$HealthEndpoint = "https://65699df3d829.ngrok-free.app/api/health/ping"  
+#$ApiKey = "DEVTOKEN"  # Set this to your API key (must match API_KEY in your server .env)
+
 
 
 # === Logging ===

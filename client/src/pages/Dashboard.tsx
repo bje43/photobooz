@@ -29,6 +29,12 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Card,
+  CardContent,
+  useMediaQuery,
+  useTheme,
+  Stack,
+  Divider,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -41,6 +47,8 @@ import {
 import { boothsApi, Booth, OperatingHours } from '../api/client';
 
 export default function Dashboard() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md')); // Only needed for Dialog fullScreen prop
   const [booths, setBooths] = useState<Booth[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -203,24 +211,57 @@ export default function Dashboard() {
     <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Photobooth Dashboard
+          <Typography 
+            variant="h6" 
+            component="div" 
+            sx={{ 
+              flexGrow: 1,
+              fontSize: { xs: '1rem', md: '1.25rem' }
+            }}
+          >
+            <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>
+              Photobooth Dashboard
+            </Box>
+            <Box component="span" sx={{ display: { xs: 'inline', md: 'none' } }}>
+              Photobooth
+            </Box>
           </Typography>
+          <IconButton
+            color="inherit"
+            onClick={() => setShowAddModal(true)}
+            sx={{ display: { xs: 'inline-flex', md: 'none' }, mr: 1 }}
+            aria-label="Add Booth"
+          >
+            <AddIcon />
+          </IconButton>
           <Button
             color="inherit"
             startIcon={<AddIcon />}
             onClick={() => setShowAddModal(true)}
-            sx={{ mr: 2 }}
+            sx={{ display: { xs: 'none', md: 'inline-flex' }, mr: 2 }}
           >
             Add Booth
           </Button>
-          <Button color="inherit" startIcon={<LogoutIcon />} onClick={handleLogout}>
+          <IconButton
+            color="inherit"
+            onClick={handleLogout}
+            sx={{ display: { xs: 'inline-flex', md: 'none' } }}
+            aria-label="Logout"
+          >
+            <LogoutIcon />
+          </IconButton>
+          <Button 
+            color="inherit" 
+            startIcon={<LogoutIcon />} 
+            onClick={handleLogout}
+            sx={{ display: { xs: 'none', md: 'inline-flex' } }}
+          >
             Logout
           </Button>
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Container maxWidth="xl" sx={{ py: { xs: 2, md: 4 }, px: { xs: 2, sm: 3 } }}>
         {error && (
           <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError('')}>
             {error}
@@ -240,17 +281,44 @@ export default function Dashboard() {
                 </InputAdornment>
               ),
             }}
-            sx={{ maxWidth: 600 }}
+            sx={{ maxWidth: { xs: '100%', md: 600 } }}
           />
         </Box>
 
         {boothsWithIssues.length > 0 && (
           <Box sx={{ mb: 4 }}>
-            <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography 
+              variant="h5" 
+              gutterBottom 
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 1,
+                fontSize: { xs: '1.25rem', md: '1.5rem' }
+              }}
+            >
               <WarningIcon color="error" />
               Booths with Issues ({boothsWithIssues.length})
             </Typography>
-            <TableContainer component={Paper} sx={{ mt: 2 }}>
+            <Stack spacing={2} sx={{ mt: 2, display: { xs: 'flex', md: 'none' } }}>
+              {boothsWithIssues.map((booth) => (
+                <BoothCard
+                  key={booth.id}
+                  booth={booth}
+                  getStatusColor={getStatusColor}
+                  getStatusLabel={getStatusLabel}
+                  onEdit={() => {
+                    setEditingBooth(booth);
+                    setEditName(booth.name || '');
+                  }}
+                  onEditHours={() => {
+                    setEditingHoursBooth(booth);
+                    setOperatingHours(booth.operatingHours);
+                  }}
+                />
+              ))}
+            </Stack>
+            <TableContainer component={Paper} sx={{ mt: 2, display: { xs: 'none', md: 'block' } }}>
               <Table>
                 <TableHead>
                   <TableRow>
@@ -288,7 +356,11 @@ export default function Dashboard() {
         )}
 
         <Box>
-          <Typography variant="h5" gutterBottom>
+          <Typography 
+            variant="h5" 
+            gutterBottom
+            sx={{ fontSize: { xs: '1.25rem', md: '1.5rem' } }}
+          >
             All Booths ({searchQuery ? `${allBoothsFiltered.length} of ${booths.length}` : booths.length})
           </Typography>
           {searchQuery && allBoothsFiltered.length === 0 && (
@@ -296,7 +368,25 @@ export default function Dashboard() {
               No booths found matching "{searchQuery}"
             </Alert>
           )}
-          <TableContainer component={Paper} sx={{ mt: 2 }}>
+          <Stack spacing={2} sx={{ mt: 2, display: { xs: 'flex', md: 'none' } }}>
+            {allBoothsFiltered.map((booth) => (
+              <BoothCard
+                key={booth.id}
+                booth={booth}
+                getStatusColor={getStatusColor}
+                getStatusLabel={getStatusLabel}
+                onEdit={() => {
+                  setEditingBooth(booth);
+                  setEditName(booth.name || '');
+                }}
+                onEditHours={() => {
+                  setEditingHoursBooth(booth);
+                  setOperatingHours(booth.operatingHours || { enabled: false, schedule: [] });
+                }}
+              />
+            ))}
+          </Stack>
+          <TableContainer component={Paper} sx={{ mt: 2, display: { xs: 'none', md: 'block' } }}>
             <Table>
               <TableHead>
                 <TableRow>
@@ -405,6 +495,7 @@ export default function Dashboard() {
         onClose={() => setEditingHoursBooth(null)}
         maxWidth="md"
         fullWidth
+        fullScreen={isMobile}
       >
         <form onSubmit={handleEditOperatingHours}>
           <DialogTitle>Edit Operating Hours</DialogTitle>
@@ -431,9 +522,15 @@ export default function Dashboard() {
             />
             {operatingHours.enabled && (
               <Box>
-                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Box 
+                  display="flex" 
+                  justifyContent="space-between" 
+                  alignItems="center" 
+                  mb={2}
+                  sx={{ flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 1, sm: 0 }, alignItems: { xs: 'stretch', sm: 'center' } }}
+                >
                   <Typography variant="subtitle2">Schedule</Typography>
-                  <Button size="small" onClick={addScheduleEntry}>
+                  <Button size="small" onClick={addScheduleEntry} sx={{ alignSelf: { xs: 'stretch', sm: 'auto' } }}>
                     Add Day
                   </Button>
                 </Box>
@@ -445,8 +542,15 @@ export default function Dashboard() {
                     alignItems="center"
                     mb={2}
                     flexWrap="wrap"
+                    sx={{
+                      flexDirection: { xs: 'column', sm: 'row' },
+                      '& > *': { 
+                        flex: { xs: '1 1 100%', sm: '0 1 auto' },
+                        minWidth: { xs: '100%', sm: 'auto' }
+                      }
+                    }}
                   >
-                    <FormControl size="small" sx={{ minWidth: 120 }}>
+                    <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 120 } }}>
                       <InputLabel>Day</InputLabel>
                       <Select
                         value={entry.day}
@@ -474,6 +578,7 @@ export default function Dashboard() {
                       }
                       InputLabelProps={{ shrink: true }}
                       inputProps={{ step: 300 }}
+                      sx={{ flex: { xs: '1 1 100%', sm: '0 1 auto' } }}
                     />
                     <TextField
                       size="small"
@@ -485,11 +590,13 @@ export default function Dashboard() {
                       }
                       InputLabelProps={{ shrink: true }}
                       inputProps={{ step: 300 }}
+                      sx={{ flex: { xs: '1 1 100%', sm: '0 1 auto' } }}
                     />
                     <IconButton
                       size="small"
                       onClick={() => removeScheduleEntry(index)}
                       color="error"
+                      sx={{ alignSelf: { xs: 'flex-start', sm: 'center' } }}
                     >
                       ×
                     </IconButton>
@@ -517,6 +624,137 @@ export default function Dashboard() {
         </form>
       </Dialog>
     </Box>
+  );
+}
+
+interface BoothCardProps {
+  booth: Booth;
+  getStatusColor: (
+    status: string,
+    isStale: boolean,
+    isWithinHours: boolean,
+  ) => 'error' | 'warning' | 'success' | 'default';
+  getStatusLabel: (status: string, isStale: boolean, isWithinHours: boolean) => string;
+  onEdit: () => void;
+  onEditHours: () => void;
+}
+
+function BoothCard({
+  booth,
+  getStatusColor,
+  getStatusLabel,
+  onEdit,
+  onEditHours,
+}: BoothCardProps) {
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  
+  const operatingHoursText = booth.operatingHours.enabled && booth.operatingHours.schedule.length > 0
+    ? booth.operatingHours.schedule.map((entry) => 
+        `${dayNames[entry.day]}: ${entry.start}-${entry.end}`
+      ).join(', ')
+    : 'Always on';
+
+  return (
+    <Card>
+      <CardContent>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h6" component="div" fontWeight="medium">
+              {booth.name || booth.boothId}
+            </Typography>
+            {booth.name && (
+              <Typography variant="body2" color="text.secondary">
+                {booth.boothId}
+              </Typography>
+            )}
+            {booth.message && (
+              <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5 }}>
+                {booth.message}
+              </Typography>
+            )}
+          </Box>
+          <Chip
+            label={getStatusLabel(booth.status, booth.isStale, booth.isWithinOperatingHours)}
+            color={getStatusColor(booth.status, booth.isStale, booth.isWithinOperatingHours)}
+            size="small"
+            sx={{ ml: 1 }}
+          />
+        </Box>
+
+        <Divider sx={{ my: 1.5 }} />
+
+        <Stack spacing={1.5}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              Mode
+            </Typography>
+            <Typography variant="body2" fontWeight="medium">
+              {booth.mode}
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              Timezone
+            </Typography>
+            <Typography variant="body2" fontWeight="medium">
+              {booth.timezone || '-'}
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              Last Ping
+            </Typography>
+            <Typography variant="body2" fontWeight="medium">
+              {booth.minutesSinceLastPing < 1
+                ? 'Just now'
+                : `${booth.minutesSinceLastPing} min ago`}
+            </Typography>
+          </Box>
+
+          <Box>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+              Operating Hours
+            </Typography>
+            <Typography variant="body2" fontWeight="medium">
+              {operatingHoursText}
+            </Typography>
+            {booth.operatingHours.enabled && 
+             booth.operatingHours.schedule.length > 0 && 
+             !booth.isWithinOperatingHours && (
+              <Chip
+                label="Offline (Expected)"
+                size="small"
+                sx={{ mt: 0.5 }}
+                color="default"
+              />
+            )}
+          </Box>
+        </Stack>
+
+        <Box sx={{ display: 'flex', gap: 1, mt: 2, pt: 2, borderTop: 1, borderColor: 'divider' }}>
+          <Button
+            startIcon={<EditIcon />}
+            onClick={onEdit}
+            variant="outlined"
+            size="small"
+            fullWidth
+          >
+            Edit
+          </Button>
+          <Button
+            startIcon={<ScheduleIcon />}
+            onClick={onEditHours}
+            variant="outlined"
+            size="small"
+            fullWidth
+          >
+            Hours
+          </Button>
+        </Box>
+      </CardContent>
+    </Card>
   );
 }
 
