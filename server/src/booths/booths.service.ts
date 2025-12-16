@@ -106,17 +106,6 @@ export class BoothsService {
         booth.timezone,
       );
 
-      let status = lastLog?.status || 'unknown';
-      
-      // If outside operating hours, mark as offline (expected)
-      if (!isWithinHours) {
-        status = 'offline';
-      } else if (isStale) {
-        // If within hours but stale, that's a problem
-        status = 'stale';
-      }
-      // Otherwise use the health status from the log
-
       let mode = 'Unknown';
       if (lastLog?.metadata) {
         try {
@@ -124,6 +113,20 @@ export class BoothsService {
           mode = metadata.mode || 'Unknown';
         } catch {}
       }
+
+      let status = lastLog?.status || 'unknown';
+      
+      // If outside operating hours, mark as offline (expected)
+      if (mode === 'Maintenance') {
+        status = 'maintenance';
+      } else if (!isWithinHours) {
+        status = 'offline';
+      } else if (isStale) {
+        // If within hours but stale, that's a problem
+        status = 'stale';
+      }
+
+      
 
       let operatingHours: OperatingHours | null = null;
       if (booth.operatingHours) {
@@ -142,7 +145,7 @@ export class BoothsService {
         operatingHours: operatingHours || { enabled: false, schedule: [] },
         lastPing: booth.lastPing,
         minutesSinceLastPing,
-        isStale,
+        isMaintenance: mode === 'Maintenance',
         isWithinOperatingHours: isWithinHours,
         message: lastLog?.message,
       };

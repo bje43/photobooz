@@ -60,7 +60,6 @@ export interface Booth {
   operatingHours: OperatingHours;
   lastPing: string;
   minutesSinceLastPing: number;
-  isStale: boolean;
   isWithinOperatingHours: boolean;
   message: string | null;
 }

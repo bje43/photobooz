@@ -154,20 +154,19 @@ export default function Dashboard() {
 
   const getStatusColor = (
     status: string,
-    isStale: boolean,
-    isWithinHours: boolean,
   ): 'error' | 'warning' | 'success' | 'default' => {
-    if (status === 'offline' && !isWithinHours) return 'default';
-    if (isStale && isWithinHours) return 'error';
+    if (status === 'stale') return 'error';
+    if (status === 'maintenance') return 'warning';
     if (status === 'error') return 'error';
     if (status === 'warning') return 'warning';
     if (status === 'healthy') return 'success';
+    if (status === 'offline') return 'default';
     return 'default';
   };
 
-  const getStatusLabel = (status: string, isStale: boolean, isWithinHours: boolean) => {
-    if (status === 'offline' && !isWithinHours) return 'Offline (Expected)';
-    if (isStale && isWithinHours) return 'Stale';
+  const getStatusLabel = (status: string) => {
+    if (status === 'maintenance') return 'Maintenance';
+    if (status === 'offline') return 'Offline (Expected)';
     return status.charAt(0).toUpperCase() + status.slice(1);
   };
 
@@ -199,9 +198,10 @@ export default function Dashboard() {
   const boothsWithIssues = filterBooths(
     booths.filter(
       (b) =>
-        (b.isStale && b.isWithinOperatingHours) ||
+        b.status === 'stale' ||
         b.status === 'error' ||
-        (b.status === 'warning' && b.isWithinOperatingHours)
+        b.status === 'warning' ||
+        b.status === 'maintenance'
     )
   );
 
@@ -631,10 +631,8 @@ interface BoothCardProps {
   booth: Booth;
   getStatusColor: (
     status: string,
-    isStale: boolean,
-    isWithinHours: boolean,
   ) => 'error' | 'warning' | 'success' | 'default';
-  getStatusLabel: (status: string, isStale: boolean, isWithinHours: boolean) => string;
+  getStatusLabel: (status: string) => string;
   onEdit: () => void;
   onEditHours: () => void;
 }
@@ -674,8 +672,8 @@ function BoothCard({
             )}
           </Box>
           <Chip
-            label={getStatusLabel(booth.status, booth.isStale, booth.isWithinOperatingHours)}
-            color={getStatusColor(booth.status, booth.isStale, booth.isWithinOperatingHours)}
+            label={getStatusLabel(booth.status)}
+            color={getStatusColor(booth.status)}
             size="small"
             sx={{ ml: 1 }}
           />
@@ -762,10 +760,8 @@ interface BoothRowProps {
   booth: Booth;
   getStatusColor: (
     status: string,
-    isStale: boolean,
-    isWithinHours: boolean,
   ) => 'error' | 'warning' | 'success' | 'default';
-  getStatusLabel: (status: string, isStale: boolean, isWithinHours: boolean) => string;
+  getStatusLabel: (status: string) => string;
   onEdit: () => void;
   onEditHours: () => void;
 }
@@ -807,8 +803,8 @@ function BoothRow({
       <TableCell>{booth.boothId}</TableCell>
       <TableCell>
         <Chip
-          label={getStatusLabel(booth.status, booth.isStale, booth.isWithinOperatingHours)}
-          color={getStatusColor(booth.status, booth.isStale, booth.isWithinOperatingHours)}
+          label={getStatusLabel(booth.status)}
+          color={getStatusColor(booth.status)}
           size="small"
         />
       </TableCell>
