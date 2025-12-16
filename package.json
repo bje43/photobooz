@@ -10,7 +10,8 @@
     "npm": ">=10.0.0"
   },
   "scripts": {
-    "build": "cd server && npm run build",
+    "build": "npm run build:client && npm run build:server",
+    "build:server": "cd server && npm run build",
     "build:client": "cd client && npm run build",
     "start:dev": "cd server && npm run start:dev",
     "start:prod": "NODE_PATH=./server/node_modules node dist/main",
@@ -26,7 +27,7 @@
     "prisma:migrate": "cd server && npm run prisma:migrate",
     "prisma:migrate:deploy": "cd server && npm run prisma:migrate:deploy",
     "prisma:studio": "cd server && npm run prisma:studio",
-    "postinstall": "cd server && npm install && npm run prisma:generate"
+    "postinstall": "cd server && npm install && npm run prisma:generate && cd ../client && npm install"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
