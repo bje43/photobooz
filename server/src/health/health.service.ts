@@ -132,7 +132,7 @@ export class HealthService {
     }
   }
 
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron(CronExpression.EVERY_MINUTE)
   async checkStaleBooths() {
     const staleThresholdMinutes = 30;
     const thresholdDate = new Date();
@@ -154,7 +154,9 @@ export class HealthService {
         const isWithinHours = this.isWithinOperatingHours(
           booth.operatingHours,
           booth.timezone,
-        );
+        ); 
+
+        console.log(`${booth.name} isWithinHours`, isWithinHours);
 
         // Only send alert if within operating hours
         if (isWithinHours) {
