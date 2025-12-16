@@ -127,7 +127,8 @@ export class HealthService {
       }
 
       return false; // Not within any operating hours
-    } catch {
+    } catch(error) {
+      console.error('Error checking operating hours', error);
       return true; // Invalid schedule = assume always on
     }
   }
