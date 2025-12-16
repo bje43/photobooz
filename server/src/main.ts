@@ -9,6 +9,9 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
   
+  // Set global prefix for API routes (consistent for both dev and prod)
+  app.setGlobalPrefix('api');
+  
   // Serve static files from client build in production
   const isProduction = process.env.NODE_ENV === 'production';
   if (isProduction) {
@@ -22,9 +25,9 @@ async function bootstrap() {
       
       // Serve index.html for all non-API routes (SPA routing)
       app.getHttpAdapter().get('*', (req, res, next) => {
-        // Don't serve index.html for API routes
+        // Don't serve index.html for API routes (all API routes are under /api)
         //@ts-ignore
-        if (req.path.startsWith('/api') || req.path.startsWith('/health')) {
+        if (req.path.startsWith('/api')) {
           return next();
         }
         //@ts-ignore
