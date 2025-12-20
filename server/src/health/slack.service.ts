@@ -11,7 +11,9 @@ export class SlackService {
 
   constructor(private readonly configService: ConfigService) {
     const token = this.configService.get<string>('SLACK_BOT_TOKEN');
-    const channel = "health-alerts";
+    const isProduction = process.env.NODE_ENV === 'production';
+    const baseChannel = "health-alerts";
+    const channel = isProduction ? baseChannel : `${baseChannel}-dev`;
     this.client = token ? new WebClient(token) : null;
     this.channel = channel;
   }

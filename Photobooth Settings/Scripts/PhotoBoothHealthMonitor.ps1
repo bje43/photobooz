@@ -6,7 +6,7 @@ $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $SettingsPath = Join-Path (Split-Path -Parent $ScriptDir) "settings.json"
 $LogDir = Join-Path $ScriptDir "logs"
 $LogFile = Join-Path $LogDir "PhotoBoothHealthMonitor.log"
-$PollMinutes = 5
+$PollMinutes = 2
 $PrinterNameContains = "hiti"  # Case-insensitive
 $QueueStaleMinutes = 3  # Document in queue longer than this = jammed
 
@@ -104,22 +104,46 @@ function Get-PrinterStatus {
     }
 
     try {
-        # Find printer with "hiti" in name (case-insensitive)
+        # First, check Device Manager (WMI) for physically connected printer
+        # This is more reliable than Get-Printer which can show printers that aren't connected
+        $deviceManagerPrinters = Get-CimInstance -ClassName Win32_PnPEntity -ErrorAction SilentlyContinue | Where-Object {
+            $_.Name -like "*$PrinterNameContains*" -and $_.Present -eq $true
+        }
+
+        if ($null -eq $deviceManagerPrinters -or ($deviceManagerPrinters -is [Array] -and $deviceManagerPrinters.Count -eq 0)) {
+            Log "No printer found in Device Manager with '$PrinterNameContains' in name (or printer not physically connected)"
+            return $result
+        }
+
+        # Use the first matching device from Device Manager
+        $devicePrinter = if ($deviceManagerPrinters -is [Array]) { $deviceManagerPrinters[0] } else { $deviceManagerPrinters }
+        Log "Found printer in Device Manager: $($devicePrinter.Name) (Status: $($devicePrinter.Status), Present: $($devicePrinter.Present))"
+
+        # Verify the device status is OK
+        if ($devicePrinter.Status -ne "OK") {
+            Log "Printer found in Device Manager but status is '$($devicePrinter.Status)' - not connected"
+            return $result
+        }
+
+        # Now find the corresponding printer in Windows Print Management
         $printers = Get-Printer -ErrorAction SilentlyContinue | Where-Object {
             $_.Name -like "*$PrinterNameContains*"
         }
 
         if ($printers.Count -eq 0) {
-            Log "No printer found with '$PrinterNameContains' in name"
+            Log "Printer found in Device Manager but not in Windows Print Management"
+            # Still mark as connected since it's physically present
+            $result.PrinterName = $devicePrinter.Name
+            $result.Connected = $true
             return $result
         }
 
-        # Use the first matching printer
+        # Use the first matching printer from Print Management
         $printer = $printers[0]
         $result.PrinterName = $printer.Name
         $result.Connected = $true
 
-        Log "Found printer: $($printer.Name)"
+        Log "Found printer: $($printer.Name) (Device Manager confirms physical connection)"
 
         # Check print queue
         try {
@@ -218,12 +242,50 @@ function Get-MonitorStatus {
     return $result
 }
 
+# === Camera Check ===
+function Get-CameraStatus {
+    $result = @{
+        Connected = $false
+        CameraName = $null
+    }
+
+    try {
+        # Check Device Manager (WMI) for Canon cameras
+        $cameras = Get-CimInstance -ClassName Win32_PnPEntity -ErrorAction SilentlyContinue | Where-Object {
+            $_.Name -like "*Canon*" -and $_.Present -eq $true
+        }
+
+        if ($null -eq $cameras -or ($cameras -is [Array] -and $cameras.Count -eq 0)) {
+            Log "No Canon camera found in Device Manager (or camera not physically connected)"
+            return $result
+        }
+
+        # Use the first matching camera from Device Manager
+        $camera = if ($cameras -is [Array]) { $cameras[0] } else { $cameras }
+        Log "Found Canon camera in Device Manager: $($camera.Name) (Status: $($camera.Status), Present: $($camera.Present))"
+
+        # Verify the device status is OK
+        if ($camera.Status -ne "OK") {
+            Log "Canon camera found in Device Manager but status is '$($camera.Status)' - not connected"
+            return $result
+        }
+
+        $result.Connected = $true
+        $result.CameraName = $camera.Name
+        Log "Canon camera detected: $($camera.Name) (connected and active)"
+    } catch {
+        Log "ERROR checking camera: $($_.Exception.Message)"
+    }
+
+    return $result
+}
+
 # === Mode Check ===
 function Get-BoothMode {
     $mode = [Environment]::GetEnvironmentVariable("BREEZE_MODE", "Machine")
     if (-not $mode) { $mode = [Environment]::GetEnvironmentVariable("BREEZE_MODE", "User") }
     if (-not $mode) { $mode = [Environment]::GetEnvironmentVariable("BREEZE_MODE", "Process") }
-    if (-not $mode) { $mode = "Unknown" }
+    if (-not $mode) { $mode = "Normal" }
 
     Log "Booth mode: $mode"
     return $mode
@@ -233,6 +295,7 @@ function Get-BoothMode {
 function Get-HealthStatus {
     $printer = Get-PrinterStatus
     $monitor = Get-MonitorStatus
+    $camera = Get-CameraStatus
     $mode = Get-BoothMode
     $boothId = Get-BoothId
 
@@ -253,6 +316,11 @@ function Get-HealthStatus {
         $issues += "Monitor not connected"
     }
 
+    if (-not $camera.Connected) {
+        $status = "error"
+        $issues += "Canon camera not connected"
+    }
+
     if ($mode -eq "Unknown") {
         if ($status -eq "healthy") { $status = "warning" }
         $issues += "Booth mode unknown"
@@ -269,6 +337,7 @@ function Get-HealthStatus {
         Message = $message
         Printer = $printer
         Monitor = $monitor
+        Camera = $camera
         Mode = $mode
         BoothId = $boothId
     }
@@ -320,6 +389,10 @@ function Send-HealthPing {
                 }
                 monitor = @{
                     connected = $healthData.Monitor.Connected
+                }
+                camera = @{
+                    connected = $healthData.Camera.Connected
+                    name = $healthData.Camera.CameraName
                 }
                 mode = $healthData.Mode
                 timezone = $timezone
