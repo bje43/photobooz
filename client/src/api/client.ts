@@ -58,8 +58,6 @@ export interface Booth {
   mode: string;
   timezone: string | null;
   operatingHours: OperatingHours;
-  geographicArea: string | null;
-  assignedTech: string | null;
   lastPing: string;
   minutesSinceLastPing: number;
   isWithinOperatingHours: boolean;
@@ -89,18 +87,6 @@ export const boothsApi = {
   updateOperatingHours: async (id: string, operatingHours: OperatingHours) => {
     const response = await apiClient.put(`/booths/${id}/operating-hours`, {
       operatingHours,
-    });
-    return response.data;
-  },
-  updateGeographicArea: async (id: string, geographicArea: string | null) => {
-    const response = await apiClient.put(`/booths/${id}/geographic-area`, {
-      geographicArea,
-    });
-    return response.data;
-  },
-  updateAssignedTech: async (id: string, assignedTech: string | null) => {
-    const response = await apiClient.put(`/booths/${id}/assigned-tech`, {
-      assignedTech,
     });
     return response.data;
   },

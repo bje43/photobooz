@@ -16,8 +16,6 @@ model Photobooth {
   name          String?
   timezone      String?  // IANA timezone (e.g., "America/New_York")
   operatingHours String? // JSON string: { "enabled": true, "schedule": [...] }
-  geographicArea String? // Geographic area/region (e.g., "East Coast", "West Coast", "Midwest")
-  assignedTech  String?  // Assigned technician name or ID
   lastPing      DateTime @default(now())
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

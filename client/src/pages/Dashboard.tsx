@@ -57,8 +57,6 @@ export default function Dashboard() {
   const [newBoothId, setNewBoothId] = useState('');
   const [newBoothName, setNewBoothName] = useState('');
   const [editName, setEditName] = useState('');
-  const [editGeographicArea, setEditGeographicArea] = useState('');
-  const [editAssignedTech, setEditAssignedTech] = useState('');
   const [operatingHours, setOperatingHours] = useState<OperatingHours>({
     enabled: false,
     schedule: [],
@@ -104,22 +102,9 @@ export default function Dashboard() {
     if (!editingBooth) return;
     setError('');
     try {
-      // Update name
       await boothsApi.update(editingBooth.id, editName);
-      // Update geographic area
-      await boothsApi.updateGeographicArea(
-        editingBooth.id,
-        editGeographicArea.trim() || null,
-      );
-      // Update assigned tech
-      await boothsApi.updateAssignedTech(
-        editingBooth.id,
-        editAssignedTech.trim() || null,
-      );
       setEditingBooth(null);
       setEditName('');
-      setEditGeographicArea('');
-      setEditAssignedTech('');
       loadBooths();
     } catch (error: any) {
       setError(error.response?.data?.message || 'Failed to update booth');
@@ -326,8 +311,6 @@ export default function Dashboard() {
                   onEdit={() => {
                     setEditingBooth(booth);
                     setEditName(booth.name || '');
-                    setEditGeographicArea(booth.geographicArea || '');
-                    setEditAssignedTech(booth.assignedTech || '');
                   }}
                   onEditHours={() => {
                     setEditingHoursBooth(booth);
@@ -344,7 +327,6 @@ export default function Dashboard() {
                     <TableCell>Booth ID</TableCell>
                     <TableCell>Status</TableCell>
                     <TableCell>Mode</TableCell>
-                    <TableCell>Assigned</TableCell>
                     <TableCell>Timezone</TableCell>
                     <TableCell>Last Ping</TableCell>
                     <TableCell>Operating Hours</TableCell>
@@ -361,8 +343,6 @@ export default function Dashboard() {
                       onEdit={() => {
                         setEditingBooth(booth);
                         setEditName(booth.name || '');
-                        setEditGeographicArea(booth.geographicArea || '');
-                        setEditAssignedTech(booth.assignedTech || '');
                       }}
                       onEditHours={() => {
                         setEditingHoursBooth(booth);
@@ -399,8 +379,6 @@ export default function Dashboard() {
                 onEdit={() => {
                   setEditingBooth(booth);
                   setEditName(booth.name || '');
-                  setEditGeographicArea(booth.geographicArea || '');
-                  setEditAssignedTech(booth.assignedTech || '');
                 }}
                 onEditHours={() => {
                   setEditingHoursBooth(booth);
@@ -417,7 +395,6 @@ export default function Dashboard() {
                   <TableCell>Booth ID</TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell>Mode</TableCell>
-                  <TableCell>Assigned</TableCell>
                   <TableCell>Timezone</TableCell>
                   <TableCell>Last Ping</TableCell>
                   <TableCell>Operating Hours</TableCell>
@@ -434,8 +411,6 @@ export default function Dashboard() {
                     onEdit={() => {
                       setEditingBooth(booth);
                       setEditName(booth.name || '');
-                      setEditGeographicArea(booth.geographicArea || '');
-                      setEditAssignedTech(booth.assignedTech || '');
                     }}
                     onEditHours={() => {
                       setEditingHoursBooth(booth);
@@ -487,7 +462,7 @@ export default function Dashboard() {
         fullWidth
       >
         <form onSubmit={handleEditBooth}>
-          <DialogTitle>Edit Booth</DialogTitle>
+          <DialogTitle>Edit Booth Name</DialogTitle>
           <DialogContent>
             <TextField
               margin="dense"
@@ -505,26 +480,6 @@ export default function Dashboard() {
               required
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              margin="dense"
-              label="Geographic Area"
-              fullWidth
-              placeholder="e.g., East Coast, West Coast, Midwest"
-              value={editGeographicArea}
-              onChange={(e) => setEditGeographicArea(e.target.value)}
-              helperText="Leave empty to remove geographic area assignment"
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              margin="dense"
-              label="Assigned Tech"
-              fullWidth
-              placeholder="e.g., John Doe, Tech Team A"
-              value={editAssignedTech}
-              onChange={(e) => setEditAssignedTech(e.target.value)}
-              helperText="Leave empty to remove tech assignment"
             />
           </DialogContent>
           <DialogActions>
@@ -740,20 +695,6 @@ function BoothCard({
 
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography variant="body2" color="text.secondary">
-              Assigned
-            </Typography>
-            <Typography variant="body2" fontWeight="medium">
-              {(() => {
-                const parts: string[] = [];
-                if (booth.geographicArea) parts.push(booth.geographicArea);
-                if (booth.assignedTech) parts.push(booth.assignedTech);
-                return parts.length > 0 ? parts.join(' • ') : '-';
-              })()}
-            </Typography>
-          </Box>
-
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="body2" color="text.secondary">
               Timezone
             </Typography>
             <Typography variant="body2" fontWeight="medium">
@@ -870,22 +811,6 @@ function BoothRow({
         />
       </TableCell>
       <TableCell>{booth.mode}</TableCell>
-      <TableCell>
-        {(() => {
-          const parts: string[] = [];
-          if (booth.geographicArea) parts.push(booth.geographicArea);
-          if (booth.assignedTech) parts.push(booth.assignedTech);
-          return parts.length > 0 ? (
-            <Typography variant="body2">
-              {parts.join(' • ')}
-            </Typography>
-          ) : (
-            <Typography variant="body2" color="text.secondary">
-              -
-            </Typography>
-          );
-        })()}
-      </TableCell>
       <TableCell>{booth.timezone || '-'}</TableCell>
       <TableCell>
         {booth.minutesSinceLastPing < 1

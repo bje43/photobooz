@@ -143,8 +143,6 @@ export class BoothsService {
         mode,
         timezone: booth.timezone,
         operatingHours: operatingHours || { enabled: false, schedule: [] },
-        geographicArea: booth.geographicArea,
-        assignedTech: booth.assignedTech,
         lastPing: booth.lastPing,
         minutesSinceLastPing,
         isMaintenance: mode === 'Maintenance',
@@ -196,88 +194,6 @@ export class BoothsService {
         operatingHours: JSON.stringify(operatingHours),
       },
     });
-  }
-
-  async updateGeographicArea(id: string, geographicArea: string | null) {
-    const booth = await this.prisma.photobooth.findUnique({
-      where: { id },
-    });
-
-    if (!booth) {
-      throw new NotFoundException('Booth not found');
-    }
-
-    return this.prisma.photobooth.update({
-      where: { id },
-      data: { geographicArea },
-    });
-  }
-
-  async updateAssignedTech(id: string, assignedTech: string | null) {
-    const booth = await this.prisma.photobooth.findUnique({
-      where: { id },
-    });
-
-    if (!booth) {
-      throw new NotFoundException('Booth not found');
-    }
-
-    return this.prisma.photobooth.update({
-      where: { id },
-      data: { assignedTech },
-    });
-  }
-
-  async findAllGrouped(groupBy?: 'geographicArea' | 'assignedTech' | 'both') {
-    const booths = await this.findAll();
-
-    if (!groupBy || groupBy === 'both') {
-      // Group by both geographic area and tech
-      const grouped: Record<string, Record<string, typeof booths>> = {};
-      
-      for (const booth of booths) {
-        const area = booth.geographicArea || 'Unassigned Area';
-        const tech = booth.assignedTech || 'Unassigned Tech';
-        
-        if (!grouped[area]) {
-          grouped[area] = {};
-        }
-        if (!grouped[area][tech]) {
-          grouped[area][tech] = [];
-        }
-        grouped[area][tech].push(booth);
-      }
-      
-      return grouped;
-    } else if (groupBy === 'geographicArea') {
-      // Group by geographic area only
-      const grouped: Record<string, typeof booths> = {};
-      
-      for (const booth of booths) {
-        const area = booth.geographicArea || 'Unassigned Area';
-        if (!grouped[area]) {
-          grouped[area] = [];
-        }
-        grouped[area].push(booth);
-      }
-      
-      return grouped;
-    } else if (groupBy === 'assignedTech') {
-      // Group by tech only
-      const grouped: Record<string, typeof booths> = {};
-      
-      for (const booth of booths) {
-        const tech = booth.assignedTech || 'Unassigned Tech';
-        if (!grouped[tech]) {
-          grouped[tech] = [];
-        }
-        grouped[tech].push(booth);
-      }
-      
-      return grouped;
-    }
-
-    return booths;
   }
 }
 
