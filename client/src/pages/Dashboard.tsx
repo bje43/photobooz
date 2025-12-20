@@ -360,7 +360,12 @@ export default function Dashboard() {
           <Typography 
             variant="h5" 
             gutterBottom
-            sx={{ fontSize: { xs: '1.25rem', md: '1.5rem' } }}
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 1,
+              fontSize: { xs: '1.25rem', md: '1.5rem' }
+            }}
           >
             All Booths ({searchQuery ? `${allBoothsFiltered.length} of ${booths.length}` : booths.length})
           </Typography>
