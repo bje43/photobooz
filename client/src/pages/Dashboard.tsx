@@ -37,7 +37,6 @@ import {
   Divider,
 } from '@mui/material';
 import {
-  Add as AddIcon,
   Logout as LogoutIcon,
   Edit as EditIcon,
   Warning as WarningIcon,
@@ -51,11 +50,8 @@ export default function Dashboard() {
   const isMobile = useMediaQuery(theme.breakpoints.down('md')); // Only needed for Dialog fullScreen prop
   const [booths, setBooths] = useState<Booth[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showAddModal, setShowAddModal] = useState(false);
   const [editingBooth, setEditingBooth] = useState<Booth | null>(null);
   const [editingHoursBooth, setEditingHoursBooth] = useState<Booth | null>(null);
-  const [newBoothId, setNewBoothId] = useState('');
-  const [newBoothName, setNewBoothName] = useState('');
   const [editName, setEditName] = useState('');
   const [operatingHours, setOperatingHours] = useState<OperatingHours>({
     enabled: false,
@@ -80,20 +76,6 @@ export default function Dashboard() {
       setError('Failed to load booths');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleAddBooth = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    try {
-      await boothsApi.create(newBoothId, newBoothName || undefined);
-      setShowAddModal(false);
-      setNewBoothId('');
-      setNewBoothName('');
-      loadBooths();
-    } catch (error: any) {
-      setError(error.response?.data?.message || 'Failed to create booth');
     }
   };
 
@@ -227,22 +209,6 @@ export default function Dashboard() {
               Photobooth
             </Box>
           </Typography>
-          <IconButton
-            color="inherit"
-            onClick={() => setShowAddModal(true)}
-            sx={{ display: { xs: 'inline-flex', md: 'none' }, mr: 1 }}
-            aria-label="Add Booth"
-          >
-            <AddIcon />
-          </IconButton>
-          <Button
-            color="inherit"
-            startIcon={<AddIcon />}
-            onClick={() => setShowAddModal(true)}
-            sx={{ display: { xs: 'none', md: 'inline-flex' }, mr: 2 }}
-          >
-            Add Booth
-          </Button>
           <IconButton
             color="inherit"
             onClick={handleLogout}
@@ -428,37 +394,6 @@ export default function Dashboard() {
           </TableContainer>
         </Box>
       </Container>
-
-      <Dialog open={showAddModal} onClose={() => setShowAddModal(false)} maxWidth="sm" fullWidth>
-        <form onSubmit={handleAddBooth}>
-          <DialogTitle>Add New Booth</DialogTitle>
-          <DialogContent>
-            <TextField
-              autoFocus
-              margin="dense"
-              label="Booth ID"
-              fullWidth
-              required
-              value={newBoothId}
-              onChange={(e) => setNewBoothId(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              margin="dense"
-              label="Name (optional)"
-              fullWidth
-              value={newBoothName}
-              onChange={(e) => setNewBoothName(e.target.value)}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setShowAddModal(false)}>Cancel</Button>
-            <Button type="submit" variant="contained">
-              Add Booth
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
 
       <Dialog
         open={!!editingBooth}
