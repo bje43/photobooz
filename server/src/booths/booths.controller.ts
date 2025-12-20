@@ -5,6 +5,7 @@ import {
   Put,
   Body,
   Param,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { BoothsService } from './booths.service';
@@ -16,7 +17,10 @@ export class BoothsController {
   constructor(private readonly boothsService: BoothsService) {}
 
   @Get()
-  findAll() {
+  findAll(@Query('groupBy') groupBy?: 'geographicArea' | 'assignedTech' | 'both') {
+    if (groupBy) {
+      return this.boothsService.findAllGrouped(groupBy);
+    }
     return this.boothsService.findAll();
   }
 
@@ -39,6 +43,22 @@ export class BoothsController {
       id,
       updateDto.operatingHours,
     );
+  }
+
+  @Put(':id/geographic-area')
+  updateGeographicArea(
+    @Param('id') id: string,
+    @Body() updateDto: { geographicArea: string | null },
+  ) {
+    return this.boothsService.updateGeographicArea(id, updateDto.geographicArea);
+  }
+
+  @Put(':id/assigned-tech')
+  updateAssignedTech(
+    @Param('id') id: string,
+    @Body() updateDto: { assignedTech: string | null },
+  ) {
+    return this.boothsService.updateAssignedTech(id, updateDto.assignedTech);
   }
 }
 

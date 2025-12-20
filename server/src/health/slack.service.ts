@@ -14,7 +14,9 @@ export class SlackService {
     const isProduction = process.env.NODE_ENV === 'production';
     const baseChannel = "health-alerts";
     const channel = isProduction ? baseChannel : `${baseChannel}-dev`;
-    this.client = token ? new WebClient(token) : null;
+    // Check if Slack alerts are enabled (default: disabled)
+    const slackEnabled = this.configService.get<string>('SLACK_ALERTS_ENABLED', 'false') === 'true';
+    this.client = (token && slackEnabled) ? new WebClient(token) : null;
     this.channel = channel;
   }
 

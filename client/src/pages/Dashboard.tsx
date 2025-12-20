@@ -43,6 +43,8 @@ import {
   Warning as WarningIcon,
   Schedule as ScheduleIcon,
   Search as SearchIcon,
+  LocationOn as LocationIcon,
+  Person as PersonIcon,
 } from '@mui/icons-material';
 import { boothsApi, Booth, OperatingHours } from '../api/client';
 
@@ -54,9 +56,13 @@ export default function Dashboard() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingBooth, setEditingBooth] = useState<Booth | null>(null);
   const [editingHoursBooth, setEditingHoursBooth] = useState<Booth | null>(null);
+  const [editingAreaBooth, setEditingAreaBooth] = useState<Booth | null>(null);
+  const [editingTechBooth, setEditingTechBooth] = useState<Booth | null>(null);
   const [newBoothId, setNewBoothId] = useState('');
   const [newBoothName, setNewBoothName] = useState('');
   const [editName, setEditName] = useState('');
+  const [editGeographicArea, setEditGeographicArea] = useState('');
+  const [editAssignedTech, setEditAssignedTech] = useState('');
   const [operatingHours, setOperatingHours] = useState<OperatingHours>({
     enabled: false,
     schedule: [],
@@ -122,6 +128,40 @@ export default function Dashboard() {
       loadBooths();
     } catch (error: any) {
       setError(error.response?.data?.message || 'Failed to update operating hours');
+    }
+  };
+
+  const handleEditGeographicArea = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingAreaBooth) return;
+    setError('');
+    try {
+      await boothsApi.updateGeographicArea(
+        editingAreaBooth.id,
+        editGeographicArea.trim() || null,
+      );
+      setEditingAreaBooth(null);
+      setEditGeographicArea('');
+      loadBooths();
+    } catch (error: any) {
+      setError(error.response?.data?.message || 'Failed to update geographic area');
+    }
+  };
+
+  const handleEditAssignedTech = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingTechBooth) return;
+    setError('');
+    try {
+      await boothsApi.updateAssignedTech(
+        editingTechBooth.id,
+        editAssignedTech.trim() || null,
+      );
+      setEditingTechBooth(null);
+      setEditAssignedTech('');
+      loadBooths();
+    } catch (error: any) {
+      setError(error.response?.data?.message || 'Failed to update assigned tech');
     }
   };
 
@@ -315,6 +355,14 @@ export default function Dashboard() {
                     setEditingHoursBooth(booth);
                     setOperatingHours(booth.operatingHours);
                   }}
+                  onEditArea={() => {
+                    setEditingAreaBooth(booth);
+                    setEditGeographicArea(booth.geographicArea || '');
+                  }}
+                  onEditTech={() => {
+                    setEditingTechBooth(booth);
+                    setEditAssignedTech(booth.assignedTech || '');
+                  }}
                 />
               ))}
             </Stack>
@@ -326,6 +374,8 @@ export default function Dashboard() {
                     <TableCell>Booth ID</TableCell>
                     <TableCell>Status</TableCell>
                     <TableCell>Mode</TableCell>
+                    <TableCell>Geographic Area</TableCell>
+                    <TableCell>Assigned Tech</TableCell>
                     <TableCell>Timezone</TableCell>
                     <TableCell>Last Ping</TableCell>
                     <TableCell>Operating Hours</TableCell>
@@ -346,6 +396,14 @@ export default function Dashboard() {
                       onEditHours={() => {
                         setEditingHoursBooth(booth);
                         setOperatingHours(booth.operatingHours);
+                      }}
+                      onEditArea={() => {
+                        setEditingAreaBooth(booth);
+                        setEditGeographicArea(booth.geographicArea || '');
+                      }}
+                      onEditTech={() => {
+                        setEditingTechBooth(booth);
+                        setEditAssignedTech(booth.assignedTech || '');
                       }}
                     />
                   ))}
@@ -383,6 +441,14 @@ export default function Dashboard() {
                   setEditingHoursBooth(booth);
                   setOperatingHours(booth.operatingHours || { enabled: false, schedule: [] });
                 }}
+                onEditArea={() => {
+                  setEditingAreaBooth(booth);
+                  setEditGeographicArea(booth.geographicArea || '');
+                }}
+                onEditTech={() => {
+                  setEditingTechBooth(booth);
+                  setEditAssignedTech(booth.assignedTech || '');
+                }}
               />
             ))}
           </Stack>
@@ -394,6 +460,8 @@ export default function Dashboard() {
                   <TableCell>Booth ID</TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell>Mode</TableCell>
+                  <TableCell>Geographic Area</TableCell>
+                  <TableCell>Assigned Tech</TableCell>
                   <TableCell>Timezone</TableCell>
                   <TableCell>Last Ping</TableCell>
                   <TableCell>Operating Hours</TableCell>
@@ -414,6 +482,14 @@ export default function Dashboard() {
                     onEditHours={() => {
                       setEditingHoursBooth(booth);
                       setOperatingHours(booth.operatingHours || { enabled: false, schedule: [] });
+                    }}
+                    onEditArea={() => {
+                      setEditingAreaBooth(booth);
+                      setEditGeographicArea(booth.geographicArea || '');
+                    }}
+                    onEditTech={() => {
+                      setEditingTechBooth(booth);
+                      setEditAssignedTech(booth.assignedTech || '');
                     }}
                   />
                 ))}
@@ -623,6 +699,70 @@ export default function Dashboard() {
           </DialogActions>
         </form>
       </Dialog>
+
+      <Dialog
+        open={!!editingAreaBooth}
+        onClose={() => setEditingAreaBooth(null)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <form onSubmit={handleEditGeographicArea}>
+          <DialogTitle>Edit Geographic Area</DialogTitle>
+          <DialogContent>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Booth: {editingAreaBooth?.name || editingAreaBooth?.boothId}
+            </Typography>
+            <TextField
+              autoFocus
+              margin="dense"
+              label="Geographic Area"
+              fullWidth
+              placeholder="e.g., East Coast, West Coast, Midwest"
+              value={editGeographicArea}
+              onChange={(e) => setEditGeographicArea(e.target.value)}
+              helperText="Leave empty to remove geographic area assignment"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setEditingAreaBooth(null)}>Cancel</Button>
+            <Button type="submit" variant="contained">
+              Save
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+
+      <Dialog
+        open={!!editingTechBooth}
+        onClose={() => setEditingTechBooth(null)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <form onSubmit={handleEditAssignedTech}>
+          <DialogTitle>Edit Assigned Tech</DialogTitle>
+          <DialogContent>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Booth: {editingTechBooth?.name || editingTechBooth?.boothId}
+            </Typography>
+            <TextField
+              autoFocus
+              margin="dense"
+              label="Assigned Tech"
+              fullWidth
+              placeholder="e.g., John Doe, Tech Team A"
+              value={editAssignedTech}
+              onChange={(e) => setEditAssignedTech(e.target.value)}
+              helperText="Leave empty to remove tech assignment"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setEditingTechBooth(null)}>Cancel</Button>
+            <Button type="submit" variant="contained">
+              Save
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
     </Box>
   );
 }
@@ -635,6 +775,8 @@ interface BoothCardProps {
   getStatusLabel: (status: string) => string;
   onEdit: () => void;
   onEditHours: () => void;
+  onEditArea: () => void;
+  onEditTech: () => void;
 }
 
 function BoothCard({
@@ -643,6 +785,8 @@ function BoothCard({
   getStatusLabel,
   onEdit,
   onEditHours,
+  onEditArea,
+  onEditTech,
 }: BoothCardProps) {
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   
@@ -693,6 +837,24 @@ function BoothCard({
 
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography variant="body2" color="text.secondary">
+              Geographic Area
+            </Typography>
+            <Typography variant="body2" fontWeight="medium">
+              {booth.geographicArea || '-'}
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              Assigned Tech
+            </Typography>
+            <Typography variant="body2" fontWeight="medium">
+              {booth.assignedTech || '-'}
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
               Timezone
             </Typography>
             <Typography variant="body2" fontWeight="medium">
@@ -731,13 +893,13 @@ function BoothCard({
           </Box>
         </Stack>
 
-        <Box sx={{ display: 'flex', gap: 1, mt: 2, pt: 2, borderTop: 1, borderColor: 'divider' }}>
+        <Box sx={{ display: 'flex', gap: 1, mt: 2, pt: 2, borderTop: 1, borderColor: 'divider', flexWrap: 'wrap' }}>
           <Button
             startIcon={<EditIcon />}
             onClick={onEdit}
             variant="outlined"
             size="small"
-            fullWidth
+            sx={{ flex: { xs: '1 1 calc(50% - 4px)', sm: '0 1 auto' } }}
           >
             Edit
           </Button>
@@ -746,9 +908,27 @@ function BoothCard({
             onClick={onEditHours}
             variant="outlined"
             size="small"
-            fullWidth
+            sx={{ flex: { xs: '1 1 calc(50% - 4px)', sm: '0 1 auto' } }}
           >
             Hours
+          </Button>
+          <Button
+            startIcon={<LocationIcon />}
+            onClick={onEditArea}
+            variant="outlined"
+            size="small"
+            sx={{ flex: { xs: '1 1 calc(50% - 4px)', sm: '0 1 auto' } }}
+          >
+            Area
+          </Button>
+          <Button
+            startIcon={<PersonIcon />}
+            onClick={onEditTech}
+            variant="outlined"
+            size="small"
+            sx={{ flex: { xs: '1 1 calc(50% - 4px)', sm: '0 1 auto' } }}
+          >
+            Tech
           </Button>
         </Box>
       </CardContent>
@@ -764,6 +944,8 @@ interface BoothRowProps {
   getStatusLabel: (status: string) => string;
   onEdit: () => void;
   onEditHours: () => void;
+  onEditArea: () => void;
+  onEditTech: () => void;
 }
 
 function BoothRow({
@@ -772,6 +954,8 @@ function BoothRow({
   getStatusLabel,
   onEdit,
   onEditHours,
+  onEditArea,
+  onEditTech,
 }: BoothRowProps) {
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   
@@ -809,6 +993,20 @@ function BoothRow({
         />
       </TableCell>
       <TableCell>{booth.mode}</TableCell>
+      <TableCell>
+        {booth.geographicArea || (
+          <Typography variant="body2" color="text.secondary">
+            -
+          </Typography>
+        )}
+      </TableCell>
+      <TableCell>
+        {booth.assignedTech || (
+          <Typography variant="body2" color="text.secondary">
+            -
+          </Typography>
+        )}
+      </TableCell>
       <TableCell>{booth.timezone || '-'}</TableCell>
       <TableCell>
         {booth.minutesSinceLastPing < 1
@@ -829,7 +1027,7 @@ function BoothRow({
         )}
       </TableCell>
       <TableCell align="right">
-        <Box display="flex" gap={1} justifyContent="flex-end">
+        <Box display="flex" gap={1} justifyContent="flex-end" flexWrap="wrap">
           <Button
             startIcon={<EditIcon />}
             onClick={onEdit}
@@ -845,6 +1043,22 @@ function BoothRow({
             size="small"
           >
             Hours
+          </Button>
+          <Button
+            startIcon={<LocationIcon />}
+            onClick={onEditArea}
+            variant="outlined"
+            size="small"
+          >
+            Area
+          </Button>
+          <Button
+            startIcon={<PersonIcon />}
+            onClick={onEditTech}
+            variant="outlined"
+            size="small"
+          >
+            Tech
           </Button>
         </Box>
       </TableCell>
